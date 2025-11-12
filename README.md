@@ -58,7 +58,7 @@ This dashboard is built as a **disconnected microservice** that communicates wit
    ```
 
 4. **Open browser**:
-   Navigate to `http://localhost:5173`
+   Navigate to `http://localhost:3001`
 
 ### Building for Production
 
@@ -87,6 +87,7 @@ See `docs/DEPLOYMENT.md` for detailed deployment instructions to AWS Amplify.
 - [Architecture](./docs/ARCHITECTURE.md) - Design decisions and architecture
 - [Deployment](./docs/DEPLOYMENT.md) - Deployment guide
 - [Swapping Implementations](./docs/SWAPPING_IMPLEMENTATIONS.md) - How to swap with alternatives
+- [Troubleshooting](./TROUBLESHOOTING.md) - Common issues and solutions
 
 ## Project Structure
 

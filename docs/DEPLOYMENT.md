@@ -135,7 +135,7 @@ amplify publish
 ### Required Variables
 
 - `VITE_API_ENDPOINT`: Base URL of the Zapier Triggers API
-  - Production: `https://k6peopo7ve.execute-api.us-east-1.amazonaws.com/prod`
+  - Production: `https://crad1ucoc2.execute-api.us-east-1.amazonaws.com/prod`
   - Staging: (if you have a staging environment)
 
 ### Optional Variables
