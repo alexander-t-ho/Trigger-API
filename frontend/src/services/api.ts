@@ -29,10 +29,13 @@ const createApiClient = (): AxiosInstance => {
   const apiKey = getApiKey();
   const baseURL = getApiEndpoint();
 
+  console.log('API Client: Creating with baseURL:', baseURL);
+  console.log('API Client: API key present:', !!apiKey);
+
   const client = axios.create({
     baseURL,
-    headers: {
-      'Content-Type': 'application/json',
+      headers: {
+        'Content-Type': 'application/json',
       ...(apiKey && { Authorization: `Bearer ${apiKey}` }),
     },
     timeout: 30000, // 30 seconds
@@ -42,22 +45,27 @@ const createApiClient = (): AxiosInstance => {
   client.interceptors.request.use(
     (config) => {
       const key = getApiKey();
+      console.log('API Request:', config.method?.toUpperCase(), config.url);
       if (key) {
         config.headers.Authorization = `Bearer ${key}`;
+        console.log('API Request: Authorization header added');
+      } else {
+        console.warn('API Request: No API key found');
       }
       return config;
     },
     (error) => {
+      console.error('API Request Interceptor Error:', error);
       return Promise.reject(error);
     }
   );
 
   // Response interceptor for error handling
   client.interceptors.response.use(
-    (response) => response,
+      (response) => response,
     (error: AxiosError) => {
-      if (error.response) {
-        // Server responded with error status
+        if (error.response) {
+          // Server responded with error status
         const status = error.response.status;
         const data = error.response.data as any;
 
@@ -74,6 +82,12 @@ const createApiClient = (): AxiosInstance => {
         }
       } else if (error.request) {
         // Request was made but no response received
+        console.error('API Error: Request made but no response', {
+          url: error.config?.url,
+          method: error.config?.method,
+          baseURL: error.config?.baseURL,
+          fullURL: error.config?.baseURL + error.config?.url,
+        });
         throw new Error('Network error: Unable to connect to the API');
       } else {
         // Something else happened
@@ -106,8 +120,15 @@ class ZapierTriggersAPI {
    * Health check endpoint
    */
   async getHealth(): Promise<HealthResponse> {
-    const response = await this.client.get<HealthResponse>('/health');
-    return response.data;
+    console.log('API: Calling health endpoint at', this.client.defaults.baseURL + '/health');
+    try {
+      const response = await this.client.get<HealthResponse>('/health');
+      console.log('API: Health check successful', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('API: Health check failed', error);
+      throw error;
+    }
   }
 
   /**
