@@ -61,8 +61,9 @@ export default function EventList({ statusFilter, limit = config.defaultPageSize
   };
 
   const handleSelectAll = (checked: boolean) => {
+    const currentEvents = data?.events || [];
     if (checked) {
-      setSelectedEvents(new Set(events.map(e => e.event_id)));
+      setSelectedEvents(new Set(currentEvents.map(e => e.event_id)));
     } else {
       setSelectedEvents(new Set());
     }
