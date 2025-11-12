@@ -15,6 +15,8 @@ interface EventListProps {
 export default function EventList({ statusFilter, limit = config.defaultPageSize }: EventListProps) {
   const [cursor, setCursor] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<EventStatus | undefined>(statusFilter);
+  const [selectedEvents, setSelectedEvents] = useState<Set<string>>(new Set());
+  const [bulkActionLoading, setBulkActionLoading] = useState(false);
   const queryClient = useQueryClient();
 
   // Query for inbox events
@@ -40,6 +42,74 @@ export default function EventList({ statusFilter, limit = config.defaultPageSize
 
   const handleAcknowledged = () => {
     refetch();
+    setSelectedEvents(new Set()); // Clear selection after action
+  };
+
+  const handleDeleted = () => {
+    refetch();
+    setSelectedEvents(new Set()); // Clear selection after deletion
+  };
+
+  const handleSelectEvent = (eventId: string, checked: boolean) => {
+    const newSelection = new Set(selectedEvents);
+    if (checked) {
+      newSelection.add(eventId);
+    } else {
+      newSelection.delete(eventId);
+    }
+    setSelectedEvents(newSelection);
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedEvents(new Set(events.map(e => e.event_id)));
+    } else {
+      setSelectedEvents(new Set());
+    }
+  };
+
+  const handleBulkAcknowledge = async () => {
+    if (selectedEvents.size === 0) return;
+
+    setBulkActionLoading(true);
+    try {
+      const promises = Array.from(selectedEvents).map(eventId =>
+        api.acknowledgeEvent(eventId)
+      );
+      await Promise.all(promises);
+      queryClient.invalidateQueries({ queryKey: ['inbox'] });
+      setSelectedEvents(new Set());
+      refetch();
+    } catch (error) {
+      console.error('Bulk acknowledge failed:', error);
+      alert(`Failed to acknowledge some events: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedEvents.size === 0) return;
+
+    if (!confirm(`Are you sure you want to delete ${selectedEvents.size} event(s)?`)) {
+      return;
+    }
+
+    setBulkActionLoading(true);
+    try {
+      const promises = Array.from(selectedEvents).map(eventId =>
+        api.deleteEvent(eventId)
+      );
+      await Promise.all(promises);
+      queryClient.invalidateQueries({ queryKey: ['inbox'] });
+      setSelectedEvents(new Set());
+      refetch();
+    } catch (error) {
+      console.error('Bulk delete failed:', error);
+      alert(`Failed to delete some events: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setBulkActionLoading(false);
+    }
   };
 
   const handleNextPage = () => {
@@ -101,6 +171,42 @@ export default function EventList({ statusFilter, limit = config.defaultPageSize
       {data && (
         <div className="event-list-info">
           Showing {events.length} of {data.total_count} events
+          {selectedEvents.size > 0 && (
+            <span className="selection-info">
+              ({selectedEvents.size} selected)
+            </span>
+          )}
+        </div>
+      )}
+
+      {selectedEvents.size > 0 && (
+        <div className="bulk-actions-bar">
+          <div className="bulk-actions-info">
+            {selectedEvents.size} event(s) selected
+          </div>
+          <div className="bulk-actions-buttons">
+            <button
+              onClick={handleBulkAcknowledge}
+              disabled={bulkActionLoading}
+              className="bulk-action-button acknowledge"
+            >
+              {bulkActionLoading ? 'Processing...' : `✓ Acknowledge ${selectedEvents.size}`}
+            </button>
+            <button
+              onClick={handleBulkDelete}
+              disabled={bulkActionLoading}
+              className="bulk-action-button delete"
+            >
+              {bulkActionLoading ? 'Processing...' : `🗑️ Delete ${selectedEvents.size}`}
+            </button>
+            <button
+              onClick={() => setSelectedEvents(new Set())}
+              disabled={bulkActionLoading}
+              className="bulk-action-button cancel"
+            >
+              Clear Selection
+            </button>
+          </div>
         </div>
       )}
 
@@ -110,13 +216,32 @@ export default function EventList({ statusFilter, limit = config.defaultPageSize
         </div>
       ) : (
         <>
+          <div className="event-list-select-all">
+            <label className="select-all-checkbox">
+              <input
+                type="checkbox"
+                checked={events.length > 0 && selectedEvents.size === events.length}
+                onChange={(e) => handleSelectAll(e.target.checked)}
+              />
+              <span>Select All</span>
+            </label>
+          </div>
           <div className="event-list-items">
             {events.map((event: EventInboxItem) => (
-              <EventCard
-                key={event.event_id}
-                event={event}
-                onAcknowledged={handleAcknowledged}
-              />
+              <div key={event.event_id} className="event-item-wrapper">
+                <label className="event-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={selectedEvents.has(event.event_id)}
+                    onChange={(e) => handleSelectEvent(event.event_id, e.target.checked)}
+                  />
+                </label>
+                <EventCard
+                  event={event}
+                  onAcknowledged={handleAcknowledged}
+                  onDeleted={handleDeleted}
+                />
+              </div>
             ))}
           </div>
 

@@ -1,14 +1,19 @@
 import { format } from 'date-fns';
+import { useState } from 'react';
 import type { EventInboxItem } from '../types/event';
 import AcknowledgeButton from './AcknowledgeButton';
+import DeleteButton from './DeleteButton';
+import EventDetail from './EventDetail';
 import './EventCard.css';
 
 interface EventCardProps {
   event: EventInboxItem;
   onAcknowledged?: () => void;
+  onDeleted?: () => void;
 }
 
-export default function EventCard({ event, onAcknowledged }: EventCardProps) {
+export default function EventCard({ event, onAcknowledged, onDeleted }: EventCardProps) {
+  const [showDetail, setShowDetail] = useState(false);
   const formatDate = (dateString: string) => {
     try {
       return format(new Date(dateString), 'PPpp');
@@ -62,12 +67,32 @@ export default function EventCard({ event, onAcknowledged }: EventCardProps) {
       </div>
 
       <div className="event-card-footer">
-        <AcknowledgeButton
-          eventId={event.event_id}
-          onAcknowledged={onAcknowledged}
-          disabled={event.status === 'acknowledged'}
-        />
+        <div className="event-card-actions">
+          <button
+            className="view-detail-button"
+            onClick={() => setShowDetail(true)}
+            title="View full details"
+          >
+            📋 View Details
+          </button>
+          <AcknowledgeButton
+            eventId={event.event_id}
+            onAcknowledged={onAcknowledged}
+            disabled={event.status === 'acknowledged'}
+          />
+          <DeleteButton
+            eventId={event.event_id}
+            onDeleted={onDeleted}
+          />
+        </div>
       </div>
+
+      {showDetail && (
+        <EventDetail
+          event={event}
+          onClose={() => setShowDetail(false)}
+        />
+      )}
     </div>
   );
 }

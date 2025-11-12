@@ -87,10 +87,31 @@
 }
 
 .event-card-footer {
-  display: flex;
-  justify-content: flex-end;
   padding-top: 1rem;
   border-top: 1px solid #e0e0e0;
+}
+
+.event-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.view-detail-button {
+  padding: 0.5rem 1rem;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.view-detail-button:hover {
+  background-color: #1976d2;
 }
 
 @media (max-width: 768px) {

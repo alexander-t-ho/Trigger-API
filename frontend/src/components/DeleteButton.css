@@ -1,0 +1,80 @@
+.delete-button {
+  padding: 0.5rem 1rem;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+  margin-left: 0.5rem;
+}
+
+.delete-button:hover:not(:disabled) {
+  background-color: #d32f2f;
+}
+
+.delete-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.delete-confirm-dialog {
+  padding: 1rem;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+.delete-confirm-dialog p {
+  margin: 0 0 1rem 0;
+  color: #856404;
+  font-weight: 500;
+}
+
+.delete-confirm-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.delete-confirm-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.delete-confirm-button.confirm {
+  background-color: #f44336;
+  color: white;
+}
+
+.delete-confirm-button.confirm:hover:not(:disabled) {
+  background-color: #d32f2f;
+}
+
+.delete-confirm-button.cancel {
+  background-color: #6c757d;
+  color: white;
+}
+
+.delete-confirm-button.cancel:hover:not(:disabled) {
+  background-color: #5a6268;
+}
+
+.delete-confirm-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.delete-error {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #d32f2f;
+}
+
