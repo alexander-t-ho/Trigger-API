@@ -60,7 +60,7 @@ zapier-triggers-dashboard/
 3. **Configure Environment Variables**:
    In Amplify Console → App settings → Environment variables:
    ```
-   VITE_API_ENDPOINT=https://k6peopo7ve.execute-api.us-east-1.amazonaws.com/prod
+   VITE_API_ENDPOINT=https://crad1ucoc2.execute-api.us-east-1.amazonaws.com/prod
    VITE_POLL_INTERVAL=5000
    VITE_DEFAULT_PAGE_SIZE=100
    VITE_ENABLE_POLLING=true
