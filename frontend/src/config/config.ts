@@ -11,7 +11,7 @@ export const config = {
    * Default: Production API endpoint
    */
   apiEndpoint: import.meta.env.VITE_API_ENDPOINT || 
-    'https://k6peopo7ve.execute-api.us-east-1.amazonaws.com/prod',
+    'https://crad1ucoc2.execute-api.us-east-1.amazonaws.com/prod',
   
   /**
    * API key for authentication
